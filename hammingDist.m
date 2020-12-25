@@ -1,43 +1,49 @@
-function [mAP] = perf_metric4Label( RetrLabels, QueryLabels, HammingDist)
-% Calculating mAP for retrieval
-% RetrLabels: m*l binary matrix ({0, 1}), m: retrieval set size, l: vocabulary size
-% QueryLabels: n*l binary matrix ({0, 1}), n: query set size, l: vocabulary size
-% HammingDist: m*n，distance matrix between retrieval and query sets
+function Dh=hammingDist(B1, B2)
+%
+% Compute hamming distance between two sets of samples (B1, B2)
+%
+% Dh=hammingDist(B1, B2);
+%
+% Input
+%    B1, B2: compact bit vectors. Each datapoint is one row.
+%    size(B1) = [ndatapoints1, nwords]
+%    size(B2) = [ndatapoints2, nwords]
+%    It is faster if ndatapoints1 < ndatapoints2
+% 
+% Output
+%    Dh = hamming distance. 
+%    size(Dh) = [ndatapoints1, ndatapoints2]
 
-    [tsN, tagNum] = size(QueryLabels);
-    multiLabel = tagNum > 1;                                            % multi-label or multi-class
+% example query
+% Dhamm = hammingDist(B2, B1);
+% this will give the same result than:
+%    Dhamm = distMat(U2>0, U1>0).^2;
+% the size of the distance matrix is:
+%    size(Dhamm) = [Ntest x Ntraining]
 
-    mAP = 0;
-    goodQueryNum = 10;
+    % loop-up table:
+    bit_in_char = uint16([...
+        0 1 1 2 1 2 2 3 1 2 2 3 2 3 3 4 1 2 2 3 2 3 ...
+        3 4 2 3 3 4 3 4 4 5 1 2 2 3 2 3 3 4 2 3 3 4 ...
+        3 4 4 5 2 3 3 4 3 4 4 5 3 4 4 5 4 5 5 6 1 2 ...
+        2 3 2 3 3 4 2 3 3 4 3 4 4 5 2 3 3 4 3 4 4 5 ...
+        3 4 4 5 4 5 5 6 2 3 3 4 3 4 4 5 3 4 4 5 4 5 ...
+        5 6 3 4 4 5 4 5 5 6 4 5 5 6 5 6 6 7 1 2 2 3 ...
+        2 3 3 4 2 3 3 4 3 4 4 5 2 3 3 4 3 4 4 5 3 4 ...
+        4 5 4 5 5 6 2 3 3 4 3 4 4 5 3 4 4 5 4 5 5 6 ...
+        3 4 4 5 4 5 5 6 4 5 5 6 5 6 6 7 2 3 3 4 3 4 ...
+        4 5 3 4 4 5 4 5 5 6 3 4 4 5 4 5 5 6 4 5 5 6 ...
+        5 6 6 7 3 4 4 5 4 5 5 6 4 5 5 6 5 6 6 7 4 5 ...
+        5 6 5 6 6 7 5 6 6 7 6 7 7 8]);
 
-    % Instances sharing at least one label are considered to be relevant
-    if multiLabel
-        rM = RetrLabels * QueryLabels';
-    end
+    n1 = size(B1, 1);
+    [n2, nwords] = size(B2);
 
-    for ti = 1 : tsN
-        if multiLabel
-            gnd = find(rM(:, ti) > 0);
-        else
-            gnd = find(RetrLabels == QueryLabels(ti));
+    Dh = zeros([n1 n2], 'uint16');
+    for j = 1 : n1
+        for n=1 : nwords
+            y = bitxor(B1(j, n), B2(:, n));
+            Dh(j, :) = Dh(j, :) + bit_in_char(y + 1);
         end
-        gndNum = length(gnd);
-        if gndNum == 0
-            continue;
-        end
-        goodQueryNum = goodQueryNum + 1;   
-
-        [~, tmpI] = sort(HammingDist(:, ti), 1, 'ascend');
-        rightInd = ismember(tmpI, gnd);
-
-        % Find indecies of ground-truth relevant instances
-        indecies = sort(find(rightInd));    
-
-        % Precision at the position of each relevant intance
-        P = [1: 1: gndNum]' ./ indecies;
-        AP = mean(P);
-        mAP = mAP + AP;    
     end
-    mAP = mAP / goodQueryNum;
 end
-
