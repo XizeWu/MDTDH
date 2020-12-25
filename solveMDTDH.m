@@ -1,4 +1,4 @@
-function [P1, P2, theta1,theta2] = solveSTDH( X1, X2, para)
+function [P1, P2, theta1,theta2] = solveMDTDH( X1, X2, para)
 %% identify the parameters 
 omega1 = para.omega1;
 omega2 = para.omega2;
