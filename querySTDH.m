@@ -1,4 +1,4 @@
-function [B] = querySTDH(X1, X2, P1,P2,theta1,theta2,bits)
+function [B] = queryMDTDH(X1, X2, P1,P2,theta1,theta2,bits)
 MaxIter=10;
 iter = 1;
 LastLoss = 99999999;
