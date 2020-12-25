@@ -6,7 +6,7 @@ sample = randsample(Ntrain, n_anchors);
 anchorI = I_tr(sample,:);
 anchorT = T_tr(sample,:);
 
-run = 10;
+run = 5;
 para.MAX_iter = 30;
 para.bits = 16;
 para.beta = 1000;
