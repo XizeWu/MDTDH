@@ -20,7 +20,7 @@ para.theta2 = 0.5;
 map = zeros(run, 1);
 
 %% Display parameter settings
-fprintf('%d-bits: MAX_iter = %d, beta = %.4f, lambda = %.4f, sigmmaI = %d, sigmmaT = %d\n', ...
+fprintf('%d-bits: MAX_iter = %d, beta = %.4f, lambda = %.5f, sigmmaI = %d, sigmmaT = %d\n', ...
         para.bits, para.MAX_iter, para.beta, para.lambda, sigmaI ,sigmaT);
     
 %% Data preparing
@@ -69,6 +69,6 @@ for i = 1 : run
     map(i) = map_tmp;
     topN = TOPK(Dhamm,L_db, L_te, para.bits);
 % 	save my_topk_mir_16 topN
-	fprintf('=========== run = %d, mAP = %.5f ===========\n', i, map_tmp);
+	fprintf('=========== run = %d, mAP = %.4f ===========\n', i, map_tmp);
 end
-fprintf('*********** bits = %d, mAP : %.5f ***********\n',para.bits, mean(map));
+fprintf('*********** bits = %d, mAP : %.4f ***********\n',para.bits, mean(map));
