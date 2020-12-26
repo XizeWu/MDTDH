@@ -55,7 +55,7 @@ for i = 1 : run
     Te_db = Phi_dbT';
     
     %% Training model
-    [P1, P2, theta1, theta2] = solveMDTDH(I_temp, T_temp, para);
+    [P1, P2] = solveMDTDH(I_temp, T_temp, para);
     
     %% Test model
     [Y_te] = queryMDTDH(Im_te, Te_te, P1,P2, para.bits)';
