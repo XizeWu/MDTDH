@@ -1,4 +1,4 @@
-function [P1, P2, theta1, theta2] = solveMDTDH(X1, X2, para)
+function [P1, P2] = solveMDTDH(X1, X2, para)
 % X1        the nonlinear representation of the image modality
 % X2        the nonlinear representation of the text modality
 % omega1    the weight of the image modality
